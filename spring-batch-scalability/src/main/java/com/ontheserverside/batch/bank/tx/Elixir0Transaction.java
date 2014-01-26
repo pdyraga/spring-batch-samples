@@ -1,6 +1,11 @@
 package com.ontheserverside.batch.bank.tx;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -11,6 +16,21 @@ import java.util.Date;
  * security and tax payments.
  */
 public final class Elixir0Transaction {
+
+    /**
+     * Names of fields declared as a 'text type' fields by the elixir0 format
+     */
+    private static final String[] TEXT_FIELDS = {
+            "orderingPartyAccountNumber",
+            "beneficiaryAccountNumber",
+            "orderingPartyNameAndAddress",
+            "beneficiaryNameAndAddress",
+            "paymentDetails",
+            "transactionCode",
+            "clientBankInformation"
+    };
+
+    private static final ToStringStyle TO_STRING_STYLE = new TxToStringStyle();
 
     private int paymentCode;
     private Date paymentDate;
@@ -24,7 +44,10 @@ public final class Elixir0Transaction {
     private String beneficiaryAddress;
     private String beneficiarySortCode;
 
+    private String paymentDetails;
+
     // fields below are used only for social security and tax payments
+    // their values should be extracted from 'paymentDetails' section
     private String payersNip;
     private String identifierType;
     private String payersIdentification;
@@ -124,6 +147,10 @@ public final class Elixir0Transaction {
         this.beneficiarySortCode = beneficiarySortCode;
     }
 
+    public String getPaymentDetails() { return paymentDetails; }
+
+    public void setPaymentDetails(String paymentDetails) { this.paymentDetails = paymentDetails; }
+
     public String getPayersNip() {
         return payersNip;
     }
@@ -194,5 +221,71 @@ public final class Elixir0Transaction {
 
     public void setClientBankInformation(String clientBankInformation) {
         this.clientBankInformation = clientBankInformation;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, TO_STRING_STYLE)
+                .append("paymentCode", paymentCode)
+                .append("paymentDate", paymentDate)
+                .append("amount", amount)
+                .append("orderingPartySortCode", orderingPartySortCode)
+                .append("0") // hardcoded as '0' in the format definition
+                .append("orderingPartyAccountNumber", orderingPartyAccountNumber)
+                .append("beneficiaryAccountNumber", beneficiaryAccountNumber)
+                .append("orderingPartyNameAndAddress", String.format("%s|%s",
+                        orderingPartyName != null ? orderingPartyName : "",
+                        orderingPartyAddress != null ? orderingPartyAddress : ""))
+                .append("beneficiaryNameAndAddress", String.format("%s|%s",
+                        beneficiaryName != null ? beneficiaryName : "",
+                        beneficiaryAddress != null ? beneficiaryAddress : ""))
+                .append("0") // hardcoded as '0' in the format definition
+                .append("beneficiarySortCode", beneficiarySortCode)
+                .append("paymentDetails", paymentDetails)
+                .append("") // hardcoded as empty in the format definition
+                .append("") // hardcoded as empty in the format definition
+                .append("transactionCode", transactionCode)
+                .append("clientBankInformation", clientBankInformation)
+                .toString();
+    }
+
+    private static class TxToStringStyle extends ToStringStyle {
+
+        TxToStringStyle() {
+            super();
+            this.setUseClassName(false);
+            this.setUseIdentityHashCode(false);
+            this.setUseFieldNames(false);
+            this.setContentStart("");
+            this.setContentEnd("");
+            this.setNullText("");
+        }
+
+        @Override
+        protected void appendFieldStart(StringBuffer buffer, String fieldName) {
+            super.appendFieldStart(buffer, fieldName);
+
+            if (ArrayUtils.contains(TEXT_FIELDS, fieldName)) {
+                buffer.append("\"");
+            }
+        }
+
+        @Override
+        protected void appendFieldEnd(StringBuffer buffer, String fieldName) {
+            if (ArrayUtils.contains(TEXT_FIELDS, fieldName)) {
+                buffer.append("\"");
+            }
+
+            super.appendFieldEnd(buffer, fieldName);
+        }
+
+        @Override
+        protected void appendDetail(StringBuffer buffer, String fieldName, Object value) {
+            if (value instanceof Date) {
+                value = new SimpleDateFormat("yyyyMMdd").format(value);
+            }
+
+            buffer.append(value);
+        }
     }
 }
