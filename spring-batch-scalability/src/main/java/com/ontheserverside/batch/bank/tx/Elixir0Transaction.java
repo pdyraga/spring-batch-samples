@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.ontheserverside.batch.bank.tx;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -16,6 +32,10 @@ import java.util.Date;
  * security and tax payments.
  */
 public final class Elixir0Transaction {
+
+    public static final int PAYMENT_CODE_LOCAL = 110;
+
+    public static final String TRANSACTION_CODE_CT = "51";
 
     /**
      * Names of fields declared as a 'text type' fields by the elixir0 format
@@ -147,9 +167,13 @@ public final class Elixir0Transaction {
         this.beneficiarySortCode = beneficiarySortCode;
     }
 
-    public String getPaymentDetails() { return paymentDetails; }
+    public String getPaymentDetails() {
+        return paymentDetails;
+    }
 
-    public void setPaymentDetails(String paymentDetails) { this.paymentDetails = paymentDetails; }
+    public void setPaymentDetails(String paymentDetails) {
+        this.paymentDetails = paymentDetails;
+    }
 
     public String getPayersNip() {
         return payersNip;
