@@ -7,6 +7,7 @@
   <groupId>com.ontheserverside.batch</groupId>
   <artifactId>spring-batch-scalability</artifactId>
   <version>1.0</version>
+  <packaging>war</packaging>
 
   <name>Spring Batch scalability samples</name>
 
@@ -15,8 +16,18 @@
     <maven.compiler.target>1.7</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <org.springframework.batch.version>2.0.4.RELEASE</org.springframework.batch.version>
+    <org.eclipse.jetty.version>9.0.2.v20130417</org.eclipse.jetty.version>
   </properties>
 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-maven-plugin</artifactId>
+        <version>${org.eclipse.jetty.version}</version>
+      </plugin>
+    </plugins>
+  </build>
   
   <dependencies>
     <dependency>
