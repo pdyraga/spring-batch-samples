@@ -15,9 +15,11 @@
     <maven.compiler.source>1.7</maven.compiler.source>
     <maven.compiler.target>1.7</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
     <org.springframework.version>4.0.0.RELEASE</org.springframework.version>
     <org.springframework.batch.version>2.2.3.RELEASE</org.springframework.batch.version>
     <org.eclipse.jetty.version>9.0.2.v20130417</org.eclipse.jetty.version>
+    <org.hsqldb.version>2.3.1</org.hsqldb.version>
   </properties>
 
   <build>
@@ -26,6 +28,19 @@
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-maven-plugin</artifactId>
         <version>${org.eclipse.jetty.version}</version>
+        <configuration>
+          <webApp>
+            <contextPath>/${project.name}</contextPath>
+            <jettyEnvXml>etc/jetty-ds.xml</jettyEnvXml>
+          </webApp>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.hsqldb</groupId>
+            <artifactId>hsqldb</artifactId>
+            <version>${org.hsqldb.version}</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>
