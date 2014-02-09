@@ -16,8 +16,11 @@
 
 package com.ontheserverside.batch.bank.tx;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.io.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -27,22 +30,26 @@ import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
 
+@Component
 public final class SimpleElixir0Generator implements Elixir0Generator {
 
     @javax.annotation.Resource
+    @Value("classpath:names.txt")
     private Resource paymentPartyNamesResource;
 
     @javax.annotation.Resource
+    @Value("classpath:addresses.txt")
     private Resource paymentPartyAddressesResource;
 
     @javax.annotation.Resource
+    @Value("classpath:dictionary.txt")
     private Resource dictionaryResource;
 
     private final List<String> paymentPartyNames = new LinkedList<>();
     private final List<String> paymentPartyAddresses = new LinkedList<>();
     private final List<String> words = new LinkedList<>();
 
-    @javax.annotation.PostConstruct
+    @PostConstruct
     private void loadExternalDataResources() throws IOException {
         paymentPartyNames.addAll(loadLinesFromFile(paymentPartyNamesResource));
         paymentPartyAddresses.addAll(loadLinesFromFile(paymentPartyAddressesResource));
