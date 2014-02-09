@@ -18,7 +18,7 @@
 
     <org.springframework.version>4.0.0.RELEASE</org.springframework.version>
     <org.springframework.batch.version>2.2.3.RELEASE</org.springframework.batch.version>
-    <org.eclipse.jetty.version>9.0.2.v20130417</org.eclipse.jetty.version>
+    <org.eclipse.jetty.version>9.1.1.v20140108</org.eclipse.jetty.version>
     <org.hsqldb.version>2.3.1</org.hsqldb.version>
   </properties>
 
@@ -30,7 +30,6 @@
         <version>${org.eclipse.jetty.version}</version>
         <configuration>
           <webApp>
-            <contextPath>/${project.name}</contextPath>
             <jettyEnvXml>etc/jetty-ds.xml</jettyEnvXml>
           </webApp>
         </configuration>
