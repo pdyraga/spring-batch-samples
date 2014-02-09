@@ -8,7 +8,9 @@
     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
     http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
 
-    <mvc:annotation-driven />
+    <mvc:annotation-driven>
+      <mvc:async-support default-timeout="60000" />
+    </mvc:annotation-driven>
 
     <!--
       Handles HTTP GET requests for /resources/** by efficiently serving up
