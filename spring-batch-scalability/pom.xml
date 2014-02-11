@@ -84,6 +84,12 @@
       <version>${org.springframework.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.springframework.batch</groupId>
+      <artifactId>spring-batch-test</artifactId>
+      <version>${org.springframework.batch.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <repositories>
