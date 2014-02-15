@@ -20,6 +20,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -31,6 +32,8 @@ import java.util.Date;
  * It may contain standard credit transfer transactions as well as social
  * security and tax payments.
  */
+@Entity
+@Table(name = "ELIXIR0_TX")
 public final class Elixir0Transaction {
 
     public static final int PAYMENT_CODE_LOCAL = 110;
@@ -52,31 +55,68 @@ public final class Elixir0Transaction {
 
     private static final ToStringStyle TO_STRING_STYLE = new TxToStringStyle();
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "ID")
+    private int id;
+
+    @Column(name = "PAYMENT_CODE")
     private int paymentCode;
+
+    @Column(name = "PAYMENT_DATE")
     private Date paymentDate;
+
+    @Column(name = "AMOUNT")
     private BigDecimal amount;
+
+    @Column(name = "ORDERING_PARTY_SORD_CODE")
     private String orderingPartySortCode;
+
+    @Column(name = "ORDERING_PARTY_ACCOUNT_NUMBER")
     private String orderingPartyAccountNumber;
+
+    @Column(name = "BENEFICIARY_ACCOUNT_NUMBER")
     private String beneficiaryAccountNumber;
+
+    @Column(name = "ORDERING_PARTY_NAME")
     private String orderingPartyName;
+
+    @Column(name = "ORDERING_PARTY_ADDRESS")
     private String orderingPartyAddress;
+
+    @Column(name = "BENEFICIARY_NAME")
     private String beneficiaryName;
+
+    @Column(name = "BENEFICIARY_ADDRESS")
     private String beneficiaryAddress;
+
+    @Column(name = "BENEFICIARY_SORT_CODE")
     private String beneficiarySortCode;
 
+    @Column(name = "PAYMENT_DETAILS")
     private String paymentDetails;
 
     // fields below are used only for social security and tax payments
     // their values should be extracted from 'paymentDetails' section
+    @Column(name = "PAYERS_NIP")
     private String payersNip;
+    @Column(name = "IDENTIFIER_TYPE")
     private String identifierType;
+    @Column(name = "PAYERS_IDENTIFICATION")
     private String payersIdentification;
+    @Column(name = "PAYMENT_TYPE")
     private String paymentType;
+    @Column(name = "PAYMENT_PERIOD")
     private Date paymentPeriod;
+    @Column(name = "PERIOD_FORM_NUMBER")
     private String periodFormNumber;
-    private String additionallCaseID;
+    @Column(name = "ADDITIONAL_CASE_ID")
+    private String additionalCaseID;
 
+    @Column(name = "TRANSACTION_CODE")
     private String transactionCode;
+
+    @Column(name = "CLIENT_BANK_INFORMATION")
     private String clientBankInformation;
 
     public int getPaymentCode() {
@@ -223,12 +263,12 @@ public final class Elixir0Transaction {
         this.periodFormNumber = periodFormNumber;
     }
 
-    public String getAdditionallCaseID() {
-        return additionallCaseID;
+    public String getAdditionalCaseID() {
+        return additionalCaseID;
     }
 
-    public void setAdditionallCaseID(String additionallCaseID) {
-        this.additionallCaseID = additionallCaseID;
+    public void setAdditionalCaseID(String additionalCaseID) {
+        this.additionalCaseID = additionalCaseID;
     }
 
     public String getTransactionCode() {
