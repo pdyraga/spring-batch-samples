@@ -27,7 +27,6 @@ import java.math.BigInteger;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
 import java.util.*;
 
 @Component
@@ -65,8 +64,7 @@ public final class SimpleElixir0Generator implements Elixir0Generator {
     @Override
     public void generate(final File outputFile, final int numberOfTransactions) throws IOException {
         final TxGenerator txGenerator = new TxGenerator();
-        final BufferedWriter writer = Files.newBufferedWriter(outputFile.toPath(), StandardCharsets.UTF_8,
-                StandardOpenOption.WRITE, StandardOpenOption.CREATE);
+        final BufferedWriter writer = Files.newBufferedWriter(outputFile.toPath(), StandardCharsets.UTF_8);
         try {
             for (int i=0; i<numberOfTransactions; i++) {
                 writer.write(txGenerator.generate().toString());
