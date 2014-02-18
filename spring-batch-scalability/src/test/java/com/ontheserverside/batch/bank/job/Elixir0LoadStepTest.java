@@ -45,7 +45,7 @@ public class Elixir0LoadStepTest {
     @Test
     public void shouldLoadElixir0TxFromFile() throws Exception {
         final JobParameters jobParameters = new JobParametersBuilder()
-                .addString("fileName", this.getClass().getResource("/elixir0/5Tx.elixir0").getPath())
+                .addString("inputFile", this.getClass().getResource("/elixir0/5Tx.elixir0").getPath())
                 .toJobParameters();
 
         final JobExecution jobExecution = jobLauncherTestUtils.launchStep("elixir0LoadStep", jobParameters);

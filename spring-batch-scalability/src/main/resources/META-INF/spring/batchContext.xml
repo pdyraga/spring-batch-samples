@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+       xsi:schemaLocation=
+               "http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
 
 
     <import resource = "classpath:/META-INF/spring/elixir0ImportJob.xml" />
@@ -10,8 +11,19 @@
         <property name="transactionManager" ref="transactionManager" />
     </bean>
 
-    <bean id="jobLauncher" class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
-        <property name="jobRepository" ref="jobRepository"/>
-    </bean>
+    <beans profile="prod">
+        <!-- asynchronous job launcher -->
+        <bean id="jobLauncher" class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
+            <property name="jobRepository" ref="jobRepository"/>
+            <property name="taskExecutor" ref="executor" />
+        </bean>
+    </beans>
+
+    <beans profile="test">
+        <!-- synchronous job launcher -->
+        <bean id="jobLauncher" class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
+            <property name="jobRepository" ref="jobRepository"/>
+        </bean>
+    </beans>
 
 </beans>

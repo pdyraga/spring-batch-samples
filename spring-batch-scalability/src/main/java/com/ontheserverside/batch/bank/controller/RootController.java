@@ -3,6 +3,8 @@ package com.ontheserverside.batch.bank.controller;
 import com.ontheserverside.batch.bank.tx.Elixir0Generator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.batch.core.*;
+import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +25,12 @@ public final class RootController {
     @Autowired
     private Elixir0Generator elixir0Generator;
 
+    @Autowired
+    private JobLauncher jobLauncher;
+
+    @Autowired
+    private Job elixir0ImportJob;
+
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String goHome() {
       return "home";
@@ -42,5 +50,18 @@ public final class RootController {
                 return "Elixir0 message generated";
             }
         };
+    }
+
+    @RequestMapping(value = "/startJob", method = RequestMethod.POST)
+    public @ResponseBody String startJob(
+            @RequestParam("inputFilePath") final String inputFilePath) throws JobExecutionException {
+
+        logger.info(String.format("Starting import job for Elixir0 message %s", inputFilePath));
+
+        final JobParameters jobParameters = new JobParametersBuilder()
+                .addString("inputFile", inputFilePath)
+                .toJobParameters();
+        final JobExecution jobExecution = jobLauncher.run(elixir0ImportJob, jobParameters);
+        return "Job started with ID=" + jobExecution.getJobId();
     }
 }

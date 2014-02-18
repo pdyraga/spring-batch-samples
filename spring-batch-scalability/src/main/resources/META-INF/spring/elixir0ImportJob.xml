@@ -15,7 +15,7 @@
   </job>
 
   <bean id="elixir0LoadReader" class="org.springframework.batch.item.file.FlatFileItemReader" scope="step">
-    <property name="resource" value="file:#{jobParameters['fileName']}" />
+    <property name="resource" value="file:#{jobParameters['inputFile']}" />
     <property name="lineMapper">
       <bean class="org.springframework.batch.item.file.mapping.DefaultLineMapper">
         <property name="lineTokenizer">
