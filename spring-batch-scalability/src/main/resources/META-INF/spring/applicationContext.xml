@@ -9,6 +9,9 @@
                 http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.0.xsd">
 
 
+    <import resource = "classpath:/META-INF/spring/batchContext.xml" />
+    <import resource = "classpath:/META-INF/spring/hibernateContext.xml" />
+
     <context:component-scan base-package="com.ontheserverside.batch.bank">
         <!--
           Controllers and all controller management-related classes should be

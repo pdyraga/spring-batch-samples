@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch-2.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+  <job id="elixir0ImportJob" xmlns="http://www.springframework.org/schema/batch">
+
+    <step id="elixir0LoadStep">
+      <tasklet>
+        <chunk reader="elixir0LoadReader" writer="hibernateItemWriter" commit-interval="5" />
+      </tasklet>
+    </step>
+
+  </job>
+
+  <bean id="elixir0LoadReader" class="org.springframework.batch.item.file.FlatFileItemReader" scope="step">
+    <property name="resource" value="file:#{jobParameters['fileName']}" />
+    <property name="lineMapper">
+      <bean class="org.springframework.batch.item.file.mapping.DefaultLineMapper">
+        <property name="lineTokenizer">
+          <bean class="org.springframework.batch.item.file.transform.DelimitedLineTokenizer">
+            <property name="names" value="#{T(com.ontheserverside.batch.bank.processing.Elixir0Mapper).COLUMN_NAMES}" />
+          </bean>
+        </property>
+        <property name="fieldSetMapper">
+          <bean class="com.ontheserverside.batch.bank.processing.Elixir0Mapper" />
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+
+  <bean id="hibernateItemWriter" class="org.springframework.batch.item.database.HibernateItemWriter">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+
+</beans>
