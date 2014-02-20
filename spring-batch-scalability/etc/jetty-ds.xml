@@ -4,10 +4,10 @@
     <Arg><Ref id="wac"/></Arg>
     <Arg>jdbc/DS</Arg>
     <Arg>
-      <New class="org.hsqldb.jdbc.JDBCDataSource">
-        <Set name="DatabaseName">mem:db</Set>
-        <Set name="User">SA</Set>
-        <Set name="Password">""</Set>
+      <New class="org.h2.jdbcx.JdbcDataSource">
+        <Set name="url">jdbc:h2:mem:bank;DB_CLOSE_DELAY=-1</Set>
+        <Set name="user">sa</Set>
+        <Set name="password">sa</Set>
       </New>
     </Arg>
   </New>
