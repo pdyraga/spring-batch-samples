@@ -14,7 +14,7 @@
         <property name="hibernateProperties" ref="hibernateProperties"/>
         <property name="packagesToScan">
             <value>
-                com.ontheserverside.batch.bank.tx
+                com.ontheserverside.batch.bank
             </value>
         </property>
     </bean>
