@@ -11,12 +11,7 @@
 
     <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
         <property name="dataSource" ref="dataSource"/>
-        <property name="hibernateProperties">
-            <value>
-                hibernate.dialect=org.hibernate.dialect.H2Dialect
-                hibernate.hbm2ddl.auto=create
-            </value>
-        </property>
+        <property name="hibernateProperties" ref="hibernateProperties"/>
         <property name="packagesToScan">
             <value>
                 com.ontheserverside.batch.bank.tx
@@ -29,6 +24,7 @@
     </bean>
 
     <beans profile="prod">
+
         <jee:jndi-lookup id="dataSource" jndi-name="java:comp/env/jdbc/DS"/>
 
         <jdbc:initialize-database data-source="dataSource">
@@ -44,9 +40,31 @@
               factory-method="createWebServer" init-method="start">
             <constructor-arg value="-web,-webAllowOthers,-webPort,8082" />
         </bean>
+
+        <bean id="hibernateProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+            <property name="properties">
+                <props>
+                    <prop key="hibernate.dialect">org.hibernate.dialect.H2Dialect</prop>
+                </props>
+            </property>
+        </bean>
+
     </beans>
 
+
     <beans profile="test">
+
         <jdbc:embedded-database id="dataSource" type="H2"/>
+
+        <bean id="hibernateProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+            <property name="properties">
+                <props>
+                    <prop key="hibernate.dialect">org.hibernate.dialect.H2Dialect</prop>
+                    <prop key="hibernate.hbm2ddl.auto">create</prop>
+                </props>
+            </property>
+        </bean>
+
     </beans>
+
 </beans>

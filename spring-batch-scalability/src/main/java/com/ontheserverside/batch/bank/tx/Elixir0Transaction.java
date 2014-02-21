@@ -58,7 +58,7 @@ public final class Elixir0Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ID")
-    private int id;
+    private long id;
 
     @Column(name = "PAYMENT_CODE")
     private int paymentCode;
@@ -69,7 +69,7 @@ public final class Elixir0Transaction {
     @Column(name = "AMOUNT")
     private BigDecimal amount;
 
-    @Column(name = "ORDERING_PARTY_SORD_CODE")
+    @Column(name = "ORDERING_PARTY_SORT_CODE")
     private String orderingPartySortCode;
 
     @Column(name = "ORDERING_PARTY_ACCOUNT_NUMBER")
