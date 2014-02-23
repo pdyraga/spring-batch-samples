@@ -67,6 +67,13 @@ public class CosineJaroFuzzyMatcherTest {
     }
 
     @Test
+    public void shouldMatchWithAdditionalWords() {
+        assertThat(matcher.sequencesMatching("conan the barbarian valhalla", "conan the barbarian"), is(true));
+        assertThat(matcher.sequencesMatching("conan the barbarian valhalla fighter", "conan the barbarian"), is(true));
+        assertThat(matcher.sequencesMatching("john rambo", "john rambo famous vietnam veteran"), is(true));
+    }
+
+    @Test
     public void shouldNotMatchForDifferentWords() {
         // it's hard do define what "different words" are in terms of fuzzy matching;
         // this test (as well as all others within this class) should be considered just
