@@ -22,11 +22,8 @@ public final class SDNEntity {
     @Column(name = "ADDRESS")
     private String address;
 
-    @Column(name = "CITY")
-    private String city;
-
-    @Column(name = "COUNTRY")
-    private String country;
+    @Column(name = "ALTERNATE_NAME")
+    private String alternateName;
 
     public String getName() {
         return this.name;
@@ -36,11 +33,7 @@ public final class SDNEntity {
         return this.address;
     }
 
-    public String getCity() {
-        return this.city;
-    }
-
-    public String getCountry() {
-        return this.country;
+    public String getAlternateName() {
+        return this.alternateName;
     }
 }
