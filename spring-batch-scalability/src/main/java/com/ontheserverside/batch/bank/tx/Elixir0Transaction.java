@@ -60,6 +60,10 @@ public final class Elixir0Transaction {
     @Column(name = "ID")
     private long id;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "STATUS")
+    private TransactionStatus status;
+
     @Column(name = "PAYMENT_CODE")
     private int paymentCode;
 
@@ -118,6 +122,15 @@ public final class Elixir0Transaction {
 
     @Column(name = "CLIENT_BANK_INFORMATION")
     private String clientBankInformation;
+
+
+    public TransactionStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(TransactionStatus status) {
+        this.status = status;
+    }
 
     public int getPaymentCode() {
         return paymentCode;

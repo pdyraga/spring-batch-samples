@@ -1,6 +1,7 @@
 package com.ontheserverside.batch.bank.job;
 
 import com.ontheserverside.batch.bank.tx.Elixir0Transaction;
+import com.ontheserverside.batch.bank.tx.TransactionStatus;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
 import org.junit.Test;
@@ -65,6 +66,7 @@ public class Elixir0LoadStepTest {
 
         // we'll test mapping of the representative transaction, the rest can be proved by induction ;-)
         final Elixir0Transaction transaction = importedTransactions.get(0);
+        assertThat(transaction.getStatus(), is(TransactionStatus.LOADED));
         assertThat(transaction.getPaymentCode(), is(110));
         assertThat(transaction.getPaymentDate().getTime(), is(new SimpleDateFormat("yyyyMMdd").parse("20140212").getTime()));
         assertThat(transaction.getAmount().compareTo(BigDecimal.valueOf(828749700184127L)), is(0));

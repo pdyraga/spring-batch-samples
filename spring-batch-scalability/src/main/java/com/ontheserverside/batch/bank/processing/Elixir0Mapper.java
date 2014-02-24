@@ -1,6 +1,7 @@
 package com.ontheserverside.batch.bank.processing;
 
 import com.ontheserverside.batch.bank.tx.Elixir0Transaction;
+import com.ontheserverside.batch.bank.tx.TransactionStatus;
 import org.springframework.batch.item.file.mapping.FieldSetMapper;
 import org.springframework.batch.item.file.transform.FieldSet;
 import org.springframework.validation.BindException;
@@ -19,6 +20,7 @@ public final class Elixir0Mapper implements FieldSetMapper<Elixir0Transaction> {
     public Elixir0Transaction mapFieldSet(final FieldSet fieldSet) throws BindException {
 
         final Elixir0Transaction tx = new Elixir0Transaction();
+        tx.setStatus(TransactionStatus.LOADED);
 
         tx.setPaymentCode(fieldSet.readInt("paymentCode"));
         tx.setPaymentDate(fieldSet.readDate("paymentDate", "yyyyMMdd"));
