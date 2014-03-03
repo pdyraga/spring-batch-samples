@@ -2,7 +2,9 @@ package com.ontheserverside.batch.bank.screening;
 
 import com.ontheserverside.batch.bank.tx.Elixir0Transaction;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.LinkedList;
 import java.util.List;
 import static java.util.Arrays.asList;
 
@@ -48,28 +50,36 @@ public final class SanctionScreeningProcessor implements ItemProcessor<SanctionS
     private final class BeneficiaryAddressMatcher extends AbstractMatcher {
         @Override
         public boolean matches(Elixir0Transaction tx, SDNEntity sdn) {
-            return fuzzyMatch(tx.getBeneficiaryAddress(), sdn.getAddress());
+            final List<String> fullAddresses = new LinkedList<>();
+            for (SDNEntity.SDNAddress address : sdn.getAddresses()) {
+                fullAddresses.add(address.getFull());
+            }
+            return fuzzyMatch(tx.getBeneficiaryAddress(), fullAddresses);
         }
     }
 
     private final class OrderingPartyAddressMatcher extends AbstractMatcher {
         @Override
         public boolean matches(Elixir0Transaction tx, SDNEntity sdn) {
-            return fuzzyMatch(tx.getOrderingPartyAddress(), sdn.getAddress());
+            final List<String> fullAddresses = new LinkedList<>();
+            for (SDNEntity.SDNAddress address : sdn.getAddresses()) {
+                fullAddresses.add(address.getFull());
+            }
+            return fuzzyMatch(tx.getOrderingPartyAddress(), fullAddresses);
         }
     }
 
     private final class BeneficiaryAlternateNameMatcher extends AbstractMatcher {
         @Override
         public boolean matches(Elixir0Transaction tx, SDNEntity sdn) {
-            return fuzzyMatch(tx.getBeneficiaryName(), sdn.getAlternateName());
+            return fuzzyMatch(tx.getBeneficiaryName(), sdn.getAlternateNames());
         }
     }
 
     private final class OrderingPartyAlternateNameMatcher extends AbstractMatcher {
         @Override
         public boolean matches(Elixir0Transaction tx, SDNEntity sdn) {
-            return fuzzyMatch(tx.getOrderingPartyName(), sdn.getAlternateName());
+            return fuzzyMatch(tx.getOrderingPartyName(), sdn.getAlternateNames());
         }
     }
 
@@ -97,8 +107,18 @@ public final class SanctionScreeningProcessor implements ItemProcessor<SanctionS
 
         public abstract boolean matches(Elixir0Transaction tx, SDNEntity sdn);
 
-        protected boolean fuzzyMatch(String string1, String string2) {
-            return fuzzyMatcher.sequencesMatching(string1, string2);
+        protected boolean fuzzyMatch(String str, String searchStr) {
+            return fuzzyMatcher.sequencesMatching(str, searchStr);
+        }
+
+        protected boolean fuzzyMatch(String str, Iterable<String> searchStrs) {
+            for (String searchStr : searchStrs) {
+                if (fuzzyMatch(str, searchStr)) {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

@@ -5,6 +5,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
@@ -18,12 +21,15 @@ public class SanctionScreeningProcessorTest {
 
     private static final String BENEFICIARY_NAME = "Brandon Beer";
     private static final String ORDERING_PARTY_NAME = "Marcelle Rhee";
-    private static final String BENEFICIARY_ADDRESS = "Crystal Villas, Freeze, Michigan";
-    private static final String ORDERING_PARTY_ADDRESS = "Silent Range, Eighty Four, Oregon";
+    private static final String BENEFICIARY_ADDRESS_FULL = "Sienkiewicza 10 Kielce Poland";
+    private static final String ORDERING_PARTY_ADDRESS_FULL = "Meerschweinchen Platz 10 Berlin Germany";
 
     private static final String SDN_ENTITY_NAME = "Daniele Hagen";
     private static final String SDN_ENTITY_ALTERNATE_NAME = "Melanie Blundell";
-    private static final String SDN_ENTITY_ADDRESS = "Pleasant Plaza, Uncle Sam, Arizona";
+    private static final String SDN_ENTITY_ADDRESS = "Sunnyside 13C";
+    private static final String SDN_ENTITY_CITY = "New York";
+    private static final String SDN_ENTITY_COUNTRY = "USA";
+    private static final String SDN_ENTITY_ADDRESS_FULL = "Sunnyside 13C New York USA";
 
     private FuzzyMatcher mockFuzzyMatcher;
 
@@ -39,15 +45,18 @@ public class SanctionScreeningProcessorTest {
 
         Elixir0Transaction transaction = new Elixir0Transaction();
         transaction.setBeneficiaryName(BENEFICIARY_NAME);
-        transaction.setBeneficiaryAddress(BENEFICIARY_ADDRESS);
+        transaction.setBeneficiaryAddress(BENEFICIARY_ADDRESS_FULL);
         transaction.setOrderingPartyName(ORDERING_PARTY_NAME);
-        transaction.setOrderingPartyAddress(ORDERING_PARTY_ADDRESS);
+        transaction.setOrderingPartyAddress(ORDERING_PARTY_ADDRESS_FULL);
 
-        SDNEntity sdnEntity = new SDNEntity();
-        // it's read-only entity ;-)
-        ReflectionTestUtils.setField(sdnEntity, "name", SDN_ENTITY_NAME);
-        ReflectionTestUtils.setField(sdnEntity, "address", SDN_ENTITY_ADDRESS);
-        ReflectionTestUtils.setField(sdnEntity, "alternateName", SDN_ENTITY_ALTERNATE_NAME);
+        SDNEntity.SDNAddress sdnAddress = new SDNEntity.SDNAddress(SDN_ENTITY_ADDRESS, SDN_ENTITY_CITY, SDN_ENTITY_COUNTRY);
+        List<SDNEntity.SDNAddress> sdnAddresses = new LinkedList<>();
+        sdnAddresses.add(sdnAddress);
+
+        List<String> sdnAlternateNames = new LinkedList<>();
+        sdnAlternateNames.add(SDN_ENTITY_ALTERNATE_NAME);
+
+        SDNEntity sdnEntity = new SDNEntity(SDN_ENTITY_NAME, sdnAddresses, sdnAlternateNames);
 
         this.context = new SanctionScreeningContext(transaction, sdnEntity);
     }
@@ -79,7 +88,7 @@ public class SanctionScreeningProcessorTest {
     public void shouldMatchSanctionForBeneficiaryAddress() {
         expect(mockFuzzyMatcher.sequencesMatching(BENEFICIARY_NAME, SDN_ENTITY_NAME)).andReturn(false);
         expect(mockFuzzyMatcher.sequencesMatching(ORDERING_PARTY_NAME, SDN_ENTITY_NAME)).andReturn(false);
-        expect(mockFuzzyMatcher.sequencesMatching(BENEFICIARY_ADDRESS, SDN_ENTITY_ADDRESS)).andReturn(true);
+        expect(mockFuzzyMatcher.sequencesMatching(BENEFICIARY_ADDRESS_FULL, SDN_ENTITY_ADDRESS_FULL)).andReturn(true);
         replay(mockFuzzyMatcher);
 
         final SanctionMatch match = processor.process(context);
@@ -92,8 +101,8 @@ public class SanctionScreeningProcessorTest {
     public void shouldMatchSanctionForOrderingPartyAddress() {
         expect(mockFuzzyMatcher.sequencesMatching(BENEFICIARY_NAME, SDN_ENTITY_NAME)).andReturn(false);
         expect(mockFuzzyMatcher.sequencesMatching(ORDERING_PARTY_NAME, SDN_ENTITY_NAME)).andReturn(false);
-        expect(mockFuzzyMatcher.sequencesMatching(BENEFICIARY_ADDRESS, SDN_ENTITY_ADDRESS)).andReturn(false);
-        expect(mockFuzzyMatcher.sequencesMatching(ORDERING_PARTY_ADDRESS, SDN_ENTITY_ADDRESS)).andReturn(true);
+        expect(mockFuzzyMatcher.sequencesMatching(BENEFICIARY_ADDRESS_FULL, SDN_ENTITY_ADDRESS_FULL)).andReturn(false);
+        expect(mockFuzzyMatcher.sequencesMatching(ORDERING_PARTY_ADDRESS_FULL, SDN_ENTITY_ADDRESS_FULL)).andReturn(true);
         replay(mockFuzzyMatcher);
 
         final SanctionMatch match = processor.process(context);
@@ -106,8 +115,8 @@ public class SanctionScreeningProcessorTest {
     public void shouldMatchSanctionForBeneficiaryAlternateName() {
         expect(mockFuzzyMatcher.sequencesMatching(BENEFICIARY_NAME, SDN_ENTITY_NAME)).andReturn(false);
         expect(mockFuzzyMatcher.sequencesMatching(ORDERING_PARTY_NAME, SDN_ENTITY_NAME)).andReturn(false);
-        expect(mockFuzzyMatcher.sequencesMatching(BENEFICIARY_ADDRESS, SDN_ENTITY_ADDRESS)).andReturn(false);
-        expect(mockFuzzyMatcher.sequencesMatching(ORDERING_PARTY_ADDRESS, SDN_ENTITY_ADDRESS)).andReturn(false);
+        expect(mockFuzzyMatcher.sequencesMatching(BENEFICIARY_ADDRESS_FULL, SDN_ENTITY_ADDRESS_FULL)).andReturn(false);
+        expect(mockFuzzyMatcher.sequencesMatching(ORDERING_PARTY_ADDRESS_FULL, SDN_ENTITY_ADDRESS_FULL)).andReturn(false);
         expect(mockFuzzyMatcher.sequencesMatching(BENEFICIARY_NAME, SDN_ENTITY_ALTERNATE_NAME)).andReturn(true);
         replay(mockFuzzyMatcher);
 
@@ -121,8 +130,8 @@ public class SanctionScreeningProcessorTest {
     public void shouldMatchSanctionForOrderingPartyAlternateName() {
         expect(mockFuzzyMatcher.sequencesMatching(BENEFICIARY_NAME, SDN_ENTITY_NAME)).andReturn(false);
         expect(mockFuzzyMatcher.sequencesMatching(ORDERING_PARTY_NAME, SDN_ENTITY_NAME)).andReturn(false);
-        expect(mockFuzzyMatcher.sequencesMatching(BENEFICIARY_ADDRESS, SDN_ENTITY_ADDRESS)).andReturn(false);
-        expect(mockFuzzyMatcher.sequencesMatching(ORDERING_PARTY_ADDRESS, SDN_ENTITY_ADDRESS)).andReturn(false);
+        expect(mockFuzzyMatcher.sequencesMatching(BENEFICIARY_ADDRESS_FULL, SDN_ENTITY_ADDRESS_FULL)).andReturn(false);
+        expect(mockFuzzyMatcher.sequencesMatching(ORDERING_PARTY_ADDRESS_FULL, SDN_ENTITY_ADDRESS_FULL)).andReturn(false);
         expect(mockFuzzyMatcher.sequencesMatching(BENEFICIARY_NAME, SDN_ENTITY_ALTERNATE_NAME)).andReturn(false);
         expect(mockFuzzyMatcher.sequencesMatching(ORDERING_PARTY_NAME, SDN_ENTITY_ALTERNATE_NAME)).andReturn(true);
         replay(mockFuzzyMatcher);
@@ -137,8 +146,8 @@ public class SanctionScreeningProcessorTest {
     public void shouldNotWarnWhenSDNIsNotMatching() {
         expect(mockFuzzyMatcher.sequencesMatching(BENEFICIARY_NAME, SDN_ENTITY_NAME)).andReturn(false);
         expect(mockFuzzyMatcher.sequencesMatching(ORDERING_PARTY_NAME, SDN_ENTITY_NAME)).andReturn(false);
-        expect(mockFuzzyMatcher.sequencesMatching(BENEFICIARY_ADDRESS, SDN_ENTITY_ADDRESS)).andReturn(false);
-        expect(mockFuzzyMatcher.sequencesMatching(ORDERING_PARTY_ADDRESS, SDN_ENTITY_ADDRESS)).andReturn(false);
+        expect(mockFuzzyMatcher.sequencesMatching(BENEFICIARY_ADDRESS_FULL, SDN_ENTITY_ADDRESS_FULL)).andReturn(false);
+        expect(mockFuzzyMatcher.sequencesMatching(ORDERING_PARTY_ADDRESS_FULL, SDN_ENTITY_ADDRESS_FULL)).andReturn(false);
         expect(mockFuzzyMatcher.sequencesMatching(BENEFICIARY_NAME, SDN_ENTITY_ALTERNATE_NAME)).andReturn(false);
         expect(mockFuzzyMatcher.sequencesMatching(ORDERING_PARTY_NAME, SDN_ENTITY_ALTERNATE_NAME)).andReturn(false);
         replay(mockFuzzyMatcher);
