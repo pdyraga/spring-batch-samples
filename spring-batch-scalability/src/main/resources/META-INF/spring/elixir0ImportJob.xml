@@ -10,6 +10,15 @@
       <tasklet>
         <chunk reader="elixir0LoadReader" writer="hibernateItemWriter" commit-interval="5" />
       </tasklet>
+      <next on="COMPLETED" to="paymentSanctionScreeningStep.chunking" />
+      <fail on="FAILED"/>
+    </step>
+
+    <step id="paymentSanctionScreeningStep.chunking">
+      <tasklet>
+        <chunk reader="paymentSanctionScreeningReader" processor="paymentSanctionScreeningProcessor"
+               writer="hibernateItemWriter" commit-interval="5"/>
+      </tasklet>
     </step>
 
   </job>
@@ -30,6 +39,20 @@
     </property>
   </bean>
 
+  <bean id="paymentSanctionScreeningReader" class="org.springframework.batch.item.database.HibernateCursorItemReader">
+    <property name="sessionFactory" ref="sessionFactory" />
+    <property name="useStatelessSession" value="false" />
+    <property name="saveState" value="false" />
+    <property name="queryString">
+      <value>
+        SELECT NEW com.ontheserverside.batch.bank.screening.SanctionScreeningContext (tx, entity)
+        FROM Elixir0Transaction tx, SDNEntity entity
+        ORDER BY tx.id
+      </value>
+    </property>
+  </bean>
+
+  <bean id="paymentSanctionScreeningProcessor" class="com.ontheserverside.batch.bank.screening.SanctionScreeningProcessor" />
 
   <bean id="hibernateItemWriter" class="org.springframework.batch.item.database.HibernateItemWriter">
     <property name="sessionFactory" ref="sessionFactory" />

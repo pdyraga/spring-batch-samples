@@ -10,6 +10,7 @@ import static java.util.Arrays.asList;
 
 public final class SanctionScreeningProcessor implements ItemProcessor<SanctionScreeningContext, SanctionMatch> {
 
+    @Autowired
     private FuzzyMatcher fuzzyMatcher;
 
     private final AbstractMatcher matcher = new CompositeMatcher(asList(

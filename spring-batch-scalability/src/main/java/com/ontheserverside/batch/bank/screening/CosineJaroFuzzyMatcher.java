@@ -1,5 +1,6 @@
 package com.ontheserverside.batch.bank.screening;
 
+import org.springframework.stereotype.Component;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.CosineSimilarity;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.InterfaceStringMetric;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.Jaro;
@@ -9,6 +10,7 @@ import uk.ac.shef.wit.simmetrics.similaritymetrics.Jaro;
  *
  * @see FuzzyMatcher
  */
+@Component
 public final class CosineJaroFuzzyMatcher implements FuzzyMatcher {
 
     private static final double COSINE_MIN_MATCH_FACTOR = 0.5;

@@ -10,6 +10,7 @@ import org.springframework.batch.core.*;
 import org.springframework.batch.test.JobLauncherTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.test.context.ActiveProfiles;
@@ -29,6 +30,7 @@ import static org.junit.Assert.assertThat;
 public class Elixir0LoadStepTest {
 
     @Configuration
+    @ComponentScan("com.ontheserverside.batch.bank")
     @ImportResource({ "classpath:/META-INF/spring/hibernateContext.xml", "classpath:/META-INF/spring/batchContext.xml" })
     static class ApplicationContext {
         @Bean
