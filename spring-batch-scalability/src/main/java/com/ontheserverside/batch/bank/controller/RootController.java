@@ -54,12 +54,14 @@ public final class RootController {
 
     @RequestMapping(value = "/startJob", method = RequestMethod.POST)
     public @ResponseBody String startJob(
-            @RequestParam("inputFilePath") final String inputFilePath) throws JobExecutionException {
+            @RequestParam("inputFilePath") final String inputFilePath,
+            @RequestParam("scalingStrategy") final String scalingStrategy) throws JobExecutionException {
 
         logger.info(String.format("Starting import job for Elixir0 message %s", inputFilePath));
 
         final JobParameters jobParameters = new JobParametersBuilder()
                 .addString("inputFile", inputFilePath)
+                .addString("scalingStrategy", scalingStrategy)
                 .toJobParameters();
         final JobExecution jobExecution = jobLauncher.run(elixir0ImportJob, jobParameters);
         return "Job started with ID=" + jobExecution.getJobId();

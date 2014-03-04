@@ -6,6 +6,8 @@
 
   <job id="elixir0ImportJob" xmlns="http://www.springframework.org/schema/batch">
 
+    <validator ref="elixir0ImportJobParametersValidator" />
+
     <step id="elixir0LoadStep">
       <tasklet>
         <chunk reader="elixir0LoadReader" writer="hibernateItemWriter" commit-interval="5" />
@@ -56,6 +58,15 @@
 
   <bean id="hibernateItemWriter" class="org.springframework.batch.item.database.HibernateItemWriter">
     <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+
+  <bean id="elixir0ImportJobParametersValidator" class="org.springframework.batch.core.job.DefaultJobParametersValidator">
+    <property name="requiredKeys">
+      <list>
+        <value>inputFile</value>
+        <value>scalingStrategy</value>
+      </list>
+    </property>
   </bean>
 
 </beans>
