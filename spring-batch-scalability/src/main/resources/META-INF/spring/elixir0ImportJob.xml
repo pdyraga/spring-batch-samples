@@ -12,15 +12,36 @@
       <tasklet>
         <chunk reader="elixir0LoadReader" writer="hibernateItemWriter" commit-interval="5" />
       </tasklet>
-      <next on="COMPLETED" to="paymentSanctionScreeningStep.chunking" />
+      <next on="COMPLETED" to="scalingStrategyDecision" />
       <fail on="FAILED"/>
     </step>
 
+    <decision id="scalingStrategyDecision" decider="scalingStrategyDecider">
+      <next on="CHUNKING" to="paymentSanctionScreeningStep.chunking" />
+      <next on="PARTITIONING" to="paymentSanctionScreeningStep.partitioning" />
+    </decision>
+      
     <step id="paymentSanctionScreeningStep.chunking">
       <tasklet>
-        <chunk reader="paymentSanctionScreeningReader" processor="paymentSanctionScreeningProcessor"
+        <chunk reader="paymentSanctionScreeningReader.chunking" processor="paymentSanctionScreeningProcessor"
                writer="hibernateItemWriter" commit-interval="5"/>
       </tasklet>
+      <end on="COMPLETED" />
+      <fail on="FAILED" />
+    </step>
+
+    <step id="paymentSanctionScreeningStep.partitioning">
+      <partition partitioner="moduloPartitioner">
+        <step>
+          <tasklet throttle-limit="1">
+            <chunk reader="paymentSanctionScreeningReader.partitioning" processor="paymentSanctionScreeningProcessor"
+                   writer="hibernateItemWriter" commit-interval="5"/>
+          </tasklet>
+        </step>
+        <handler grid-size="4" />
+      </partition>
+      <end on="COMPLETED"/>
+      <fail on="FAILED" />
     </step>
 
   </job>
@@ -41,7 +62,7 @@
     </property>
   </bean>
 
-  <bean id="paymentSanctionScreeningReader" class="org.springframework.batch.item.database.HibernateCursorItemReader">
+  <bean id="paymentSanctionScreeningReader.chunking" class="org.springframework.batch.item.database.HibernateCursorItemReader">
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="useStatelessSession" value="false" />
     <property name="saveState" value="false" />
@@ -54,11 +75,37 @@
     </property>
   </bean>
 
+  <bean id="paymentSanctionScreeningReader.partitioning" scope="step" class="org.springframework.batch.item.database.HibernateCursorItemReader">
+    <property name="sessionFactory" ref="sessionFactory" />
+    <property name="useStatelessSession" value="false" />
+    <property name="saveState" value="false" />
+    <property name="queryString">
+      <value>
+        SELECT NEW com.ontheserverside.batch.bank.screening.SanctionScreeningContext (tx, entity)
+        FROM Elixir0Transaction tx, SDNEntity entity
+        WHERE mod(tx.id, :modDivisor) = :modRemainder
+        ORDER BY tx.id
+      </value>
+    </property>
+    <property name="parameterValues">
+      <map>
+        <entry key="modDivisor" value="#{stepExecutionContext['mod.divisor']}" />
+        <entry key="modRemainder" value="#{stepExecutionContext['mod.remainder']}" />
+      </map>
+    </property>
+  </bean>
+
   <bean id="paymentSanctionScreeningProcessor" class="com.ontheserverside.batch.bank.screening.SanctionScreeningProcessor" />
 
   <bean id="hibernateItemWriter" class="org.springframework.batch.item.database.HibernateItemWriter">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
+
+  <bean id="scalingStrategyDecider" class="com.ontheserverside.batch.bank.processing.JobParameterExecutionDecider">
+    <property name="jobParameterKey" value="scalingStrategy" />
+  </bean>
+
+  <bean id="moduloPartitioner" class="com.ontheserverside.batch.bank.processing.ModuloPartitioner" />
 
   <bean id="elixir0ImportJobParametersValidator" class="org.springframework.batch.core.job.DefaultJobParametersValidator">
     <property name="requiredKeys">

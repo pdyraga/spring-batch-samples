@@ -81,10 +81,10 @@
         Input file path: <input name="inputFilePath" />
         Scaling strategy:
         <select name="scalingStrategy">
-          <option value="chunking">Chunking</option>
-          <option value="partitioning">Partitioning</option>
-          <option value="remoteChunking">Remote chunking</option>
-          <option value="remotePartitioning">Remote partitioning</option>
+          <option value="CHUNKING">Chunking</option>
+          <option value="PARTITIONING">Partitioning</option>
+          <option value="REMOTE_CHUNKING">Remote chunking</option>
+          <option value="REMOTE_PARTITIONING">Remote partitioning</option>
         </select>
 
         <input class="button" type="submit" value="Run job" />
