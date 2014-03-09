@@ -11,4 +11,10 @@
       </New>
     </Arg>
   </New>
+  <New id="ffmq" class="net.timewalker.ffmq3.spring.FFMQServerBean">
+    <Set name="engineName">ffmq</Set>
+    <Set name="configLocation">etc/ffmq-server.properties</Set>
+    <Call name="start" />
+  </New>
+
 </Configure>

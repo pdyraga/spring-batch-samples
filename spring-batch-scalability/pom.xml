@@ -32,7 +32,7 @@
         <version>${org.eclipse.jetty.version}</version>
         <configuration>
           <webApp>
-            <jettyEnvXml>etc/jetty-ds.xml</jettyEnvXml>
+            <jettyEnvXml>etc/jetty-env.xml</jettyEnvXml>
           </webApp>
         </configuration>
         <dependencies>
@@ -40,6 +40,16 @@
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <version>${com.h2database.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>net.timewalker.ffmq</groupId>
+            <artifactId>ffmq3-server</artifactId>
+            <version>3.0.5</version>
+          </dependency>
+          <dependency>
+            <groupId>net.timewalker.ffmq</groupId>
+            <artifactId>ffmq3-core</artifactId>
+            <version>3.0.5</version>
           </dependency>
         </dependencies>
       </plugin>
@@ -128,5 +138,19 @@
       <url>file:${project.basedir}/repo</url>
     </repository>
   </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>project.local</id>
+      <name>project</name>
+      <url>file:${project.basedir}/repo</url>
+    </pluginRepository>
+  </pluginRepositories>
 
 </project>
