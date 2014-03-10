@@ -4,12 +4,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Immutable;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
 @Entity
 @Immutable
 @Table(name = "SDN_ENTITY")
-public final class SDNEntity {
+public final class SDNEntity implements Serializable {
 
     @Id
     @Column(name = "UID")

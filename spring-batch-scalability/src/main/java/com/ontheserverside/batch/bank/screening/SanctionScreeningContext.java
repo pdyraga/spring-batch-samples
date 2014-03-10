@@ -2,7 +2,9 @@ package com.ontheserverside.batch.bank.screening;
 
 import com.ontheserverside.batch.bank.tx.Elixir0Transaction;
 
-public final class SanctionScreeningContext {
+import java.io.Serializable;
+
+public final class SanctionScreeningContext implements Serializable {
 
     private final Elixir0Transaction transaction;
     private final SDNEntity sdnEntity;

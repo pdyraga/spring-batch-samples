@@ -21,6 +21,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -34,7 +35,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "ELIXIR0_TX")
-public final class Elixir0Transaction {
+public final class Elixir0Transaction implements Serializable {
 
     public static final int PAYMENT_CODE_LOCAL = 110;
 
