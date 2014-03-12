@@ -33,6 +33,12 @@
         <artifactId>jetty-maven-plugin</artifactId>
         <version>${org.eclipse.jetty.version}</version>
         <configuration>
+          <systemProperties>
+            <systemProperty>
+              <name>FFMQ_BASE</name>
+              <value>etc/ffmq</value>
+            </systemProperty>
+          </systemProperties>
           <webApp>
             <jettyEnvXml>etc/jetty-env.xml</jettyEnvXml>
           </webApp>
