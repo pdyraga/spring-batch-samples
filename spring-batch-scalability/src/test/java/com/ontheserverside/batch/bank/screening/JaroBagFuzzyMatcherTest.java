@@ -8,9 +8,9 @@ import static org.junit.Assert.assertThat;
 /**
  * Group of tests used to adjust sensitivity factors of metrics - we don't want to test framework here, huh? ;)
  */
-public class CosineJaroFuzzyMatcherTest {
+public class JaroBagFuzzyMatcherTest {
 
-    private CosineJaroFuzzyMatcher matcher = new CosineJaroFuzzyMatcher();
+    private JaroBagFuzzyMatcher matcher = new JaroBagFuzzyMatcher();
 
     @Test
     public void shouldNotConsiderWordsOrder() {
@@ -64,13 +64,6 @@ public class CosineJaroFuzzyMatcherTest {
     public void shouldMatchForOneLetterMisplacedAndDifferentWordsOrder() {
         assertThat(matcher.sequencesMatching("the cnoan conqueror", "conan the conqueror"), is(true));
         assertThat(matcher.sequencesMatching("conan ocnqueror the", "conan the conqueror"), is(true));
-    }
-
-    @Test
-    public void shouldMatchWithAdditionalWords() {
-        assertThat(matcher.sequencesMatching("conan the barbarian valhalla", "conan the barbarian"), is(true));
-        assertThat(matcher.sequencesMatching("conan the barbarian valhalla fighter", "conan the barbarian"), is(true));
-        assertThat(matcher.sequencesMatching("john rambo", "john rambo famous vietnam veteran"), is(true));
     }
 
     @Test

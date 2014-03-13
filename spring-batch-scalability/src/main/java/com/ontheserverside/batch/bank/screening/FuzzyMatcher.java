@@ -6,5 +6,5 @@ package com.ontheserverside.batch.bank.screening;
  */
 public interface FuzzyMatcher {
 
-    boolean sequencesMatching(String word1, String word2);
+    boolean sequencesMatching(String phrase1, String phrase2);
 }
