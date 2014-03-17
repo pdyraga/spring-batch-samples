@@ -39,7 +39,7 @@
                    writer="hibernateItemWriter" commit-interval="5"/>
           </tasklet>
         </step>
-        <handler grid-size="4" />
+        <handler task-executor="executor" grid-size="8" />
       </partition>
       <end on="COMPLETED"/>
       <fail on="FAILED" />
