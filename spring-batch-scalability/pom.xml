@@ -81,11 +81,6 @@
             <artifactId>ffmq3-server</artifactId>
             <version>${net.timewalker.ffmq.version}</version>
           </dependency>
-          <dependency>
-            <groupId>net.timewalker.ffmq</groupId>
-            <artifactId>ffmq3-core</artifactId>
-            <version>${net.timewalker.ffmq.version}</version>
-          </dependency>
         </dependencies>
       </plugin>
     </plugins>
@@ -142,6 +137,11 @@
       <groupId>uk.ac.shef.wit</groupId>
       <artifactId>simmetrics</artifactId>
       <version>1.6.2</version>
+    </dependency>
+    <dependency>
+      <groupId>net.timewalker.ffmq</groupId>
+      <artifactId>ffmq3-core</artifactId>
+      <version>${net.timewalker.ffmq.version}</version>
     </dependency>
 
     <!-- TEST DEPENDENCIES -->
