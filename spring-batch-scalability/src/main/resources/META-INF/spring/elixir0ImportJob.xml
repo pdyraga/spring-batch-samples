@@ -23,7 +23,7 @@
     </decision>
       
     <step id="paymentSanctionScreeningStep.chunking">
-      <tasklet>
+      <tasklet task-executor="executor" throttle-limit="8">
         <chunk reader="paymentSanctionScreeningReader.chunking" processor="paymentSanctionScreeningProcessor"
                writer="hibernateItemWriter" commit-interval="5"/>
       </tasklet>
@@ -47,7 +47,7 @@
 
     <step id="paymentSanctionScreeningStep.remoteChunking">
       <tasklet>
-        <chunk reader="paymentSanctionScreeningReader.chunking" processor="paymentSanctionScreeningProcessor"
+        <chunk reader="paymentSanctionScreeningReader.remoteChunking" processor="paymentSanctionScreeningProcessor"
                writer="hibernateItemWriter" commit-interval="5" />
       </tasklet>
       <end on="COMPLETED" />
@@ -71,7 +71,24 @@
     </property>
   </bean>
 
-  <bean id="paymentSanctionScreeningReader.chunking" class="org.springframework.batch.item.database.HibernateCursorItemReader">
+  <bean id="paymentSanctionScreeningReader.chunking" class="com.ontheserverside.batch.bank.processing.SynchronizedItemReaderDecorator">
+    <constructor-arg>
+      <bean class="org.springframework.batch.item.database.HibernateCursorItemReader">
+        <property name="sessionFactory" ref="sessionFactory" />
+        <property name="useStatelessSession" value="false" />
+        <property name="saveState" value="false" />
+        <property name="queryString">
+          <value>
+            SELECT NEW com.ontheserverside.batch.bank.screening.SanctionScreeningContext (tx, entity)
+            FROM Elixir0Transaction tx, SDNEntity entity
+            ORDER BY tx.id
+          </value>
+        </property>
+      </bean>
+    </constructor-arg>
+  </bean>
+
+  <bean id="paymentSanctionScreeningReader.remoteChunking" class="org.springframework.batch.item.database.HibernateCursorItemReader">
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="useStatelessSession" value="false" />
     <property name="saveState" value="false" />
