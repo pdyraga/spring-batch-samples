@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jee="http://www.springframework.org/schema/jee"
+       xmlns:int="http://www.springframework.org/schema/integration"
+       xmlns:jms="http://www.springframework.org/schema/jms"
+       xmlns:int-jms="http://www.springframework.org/schema/integration/jms"
+       xsi:schemaLocation=
+               "http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+                http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-4.0.xsd
+                http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-3.0.xsd
+                http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms-3.0.xsd
+                http://www.springframework.org/schema/integration/jms http://www.springframework.org/schema/integration/jms/spring-integration-jms-3.0.xsd">
+
+
+    <bean id="JMSConnectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
+      <constructor-arg>
+        <jee:jndi-lookup jndi-name="factory/ConnectionFactory">
+          <jee:environment>
+            java.naming.factory.initial=net.timewalker.ffmq3.jndi.FFMQInitialContextFactory
+            java.naming.provider.url=tcp://localhost:10002
+          </jee:environment>
+        </jee:jndi-lookup>
+      </constructor-arg>
+      <property name="sessionCacheSize" value="4" />
+    </bean>
+
+
+    <!-- master -->
+    <int:channel id="requests" />
+    <int-jms:outbound-channel-adapter connection-factory="JMSConnectionFactory" channel="requests"
+                                      destination-name="queue-requests" />
+
+
+    <!-- slave -->
+    <jms:listener-container connection-factory="JMSConnectionFactory" transaction-manager="transactionManager"
+                            acknowledge="transacted" concurrency="4">
+      <jms:listener destination="queue-requests" response-destination="queue-replies" ref="chunkHandler" method="handleChunk" />
+    </jms:listener-container>
+
+
+    <!--master -->
+    <int:channel id="incoming" />
+    <int-jms:message-driven-channel-adapter connection-factory="JMSConnectionFactory" destination-name="queue-replies"
+                                            channel="incoming" />
+
+    <int:transformer input-channel="incoming" output-channel="replies" ref="headerExtractor" method="extract" />
+    <bean id="headerExtractor" class="org.springframework.batch.integration.chunk.JmsRedeliveredExtractor"/>
+
+    <int:channel id="replies">
+        <int:queue/>
+    </int:channel>
+
+</beans>

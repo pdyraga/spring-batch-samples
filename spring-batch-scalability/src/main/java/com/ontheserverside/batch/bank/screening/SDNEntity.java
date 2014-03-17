@@ -19,11 +19,11 @@ public final class SDNEntity implements Serializable {
     @Column(name = "NAME")
     private String name;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "ENTITY_UID")
     private List<SDNAddress> addresses;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name = "SDN_ALTERNATE_NAME",
             joinColumns=@JoinColumn(name = "ENTITY_UID")
@@ -57,7 +57,7 @@ public final class SDNEntity implements Serializable {
     @Entity
     @Immutable
     @Table(name = "SDN_ADDRESS")
-    public static class SDNAddress {
+    public static class SDNAddress implements Serializable {
 
         @Id
         @Column(name = "ADDRESS_UID")

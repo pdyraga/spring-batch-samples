@@ -19,6 +19,7 @@
     <decision id="scalingStrategyDecision" decider="scalingStrategyDecider">
       <next on="CHUNKING" to="paymentSanctionScreeningStep.chunking" />
       <next on="PARTITIONING" to="paymentSanctionScreeningStep.partitioning" />
+      <next on="REMOTE_CHUNKING" to="paymentSanctionScreeningStep.remoteChunking" />
     </decision>
       
     <step id="paymentSanctionScreeningStep.chunking">
@@ -44,6 +45,14 @@
       <fail on="FAILED" />
     </step>
 
+    <step id="paymentSanctionScreeningStep.remoteChunking">
+      <tasklet>
+        <chunk reader="paymentSanctionScreeningReader.chunking" processor="paymentSanctionScreeningProcessor"
+               writer="hibernateItemWriter" commit-interval="5" />
+      </tasklet>
+      <end on="COMPLETED" />
+      <fail on="FAILED" />
+    </step>
   </job>
 
   <bean id="elixir0LoadReader" class="org.springframework.batch.item.file.FlatFileItemReader" scope="step">
@@ -115,5 +124,22 @@
       </list>
     </property>
   </bean>
+
+  <bean id="chunkHandler" class="org.springframework.batch.integration.chunk.RemoteChunkHandlerFactoryBean">
+    <property name="chunkWriter" ref="chunkWriter" />
+    <property name="step" ref="paymentSanctionScreeningStep.remoteChunking" />
+  </bean>
+
+  <bean id="chunkWriter" class="org.springframework.batch.integration.chunk.ChunkMessageChannelItemWriter" scope="step">
+    <property name="messagingOperations">
+      <bean class="org.springframework.integration.core.MessagingTemplate">
+        <property name="defaultChannel" ref="requests" />
+        <property name="receiveTimeout" value="1000" />
+      </bean>
+    </property>
+    <property name="replyChannel" ref="replies" />
+    <property name="maxWaitTimeouts" value="10" />
+  </bean>
+
 
 </beans>
