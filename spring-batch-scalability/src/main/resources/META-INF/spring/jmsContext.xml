@@ -27,27 +27,29 @@
 
 
     <!-- master -->
-    <int:channel id="requests" />
-    <int-jms:outbound-channel-adapter connection-factory="JMSConnectionFactory" channel="requests"
-                                      destination-name="queue-requests" />
+    <int:channel id="screening.requests.chunking" />
+    <int-jms:outbound-channel-adapter connection-factory="JMSConnectionFactory" channel="screening.requests.chunking"
+                                      destination-name="queue-screening-requests-chunking" />
 
 
     <!-- slave -->
     <jms:listener-container connection-factory="JMSConnectionFactory" transaction-manager="transactionManager"
                             acknowledge="transacted" concurrency="4">
-      <jms:listener destination="queue-requests" response-destination="queue-replies" ref="chunkHandler" method="handleChunk" />
+      <jms:listener destination="queue-screening-requests-chunking" response-destination="queue-screening-replies-chunking"
+                    ref="chunkHandler" method="handleChunk" />
     </jms:listener-container>
 
 
     <!--master -->
-    <int:channel id="incoming" />
-    <int-jms:message-driven-channel-adapter connection-factory="JMSConnectionFactory" destination-name="queue-replies"
-                                            channel="incoming" />
+    <int-jms:message-driven-channel-adapter connection-factory="JMSConnectionFactory" destination-name="queue-screening-replies-chunking"
+                                            channel="screening.incoming.chunking" />
 
-    <int:transformer input-channel="incoming" output-channel="replies" ref="headerExtractor" method="extract" />
-    <bean id="headerExtractor" class="org.springframework.batch.integration.chunk.JmsRedeliveredExtractor"/>
+    <int:channel id="screening.incoming.chunking" />
+    <int:transformer input-channel="screening.incoming.chunking" output-channel="screening.replies.chunking" method="extract">
+      <bean class="org.springframework.batch.integration.chunk.JmsRedeliveredExtractor"/>
+    </int:transformer>
 
-    <int:channel id="replies">
+    <int:channel id="screening.replies.chunking">
         <int:queue/>
     </int:channel>
 

@@ -150,11 +150,11 @@
   <bean id="chunkWriter" class="org.springframework.batch.integration.chunk.ChunkMessageChannelItemWriter" scope="step">
     <property name="messagingOperations">
       <bean class="org.springframework.integration.core.MessagingTemplate">
-        <property name="defaultChannel" ref="requests" />
+        <property name="defaultChannel" ref="screening.requests.chunking" />
         <property name="receiveTimeout" value="1000" />
       </bean>
     </property>
-    <property name="replyChannel" ref="replies" />
+    <property name="replyChannel" ref="screening.replies.chunking" />
     <property name="maxWaitTimeouts" value="10" />
   </bean>
 
