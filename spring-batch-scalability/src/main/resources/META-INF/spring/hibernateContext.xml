@@ -29,6 +29,7 @@
 
         <jdbc:initialize-database data-source="dataSource">
             <jdbc:script location="classpath:/META-INF/database/init.sql"/>
+            <jdbc:script location="classpath:/org/springframework/batch/core/schema-h2.sql"/>
         </jdbc:initialize-database>
 
         <bean id="org.h2.tools.Server" class="org.h2.tools.Server"
