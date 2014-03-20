@@ -77,5 +77,21 @@ public class JaroBagFuzzyMatcherTest {
         assertThat(matcher.sequencesMatching("nuclear", "uncle"), is(false));
         assertThat(matcher.sequencesMatching("gun", "gunner"), is(false));
         assertThat(matcher.sequencesMatching("uranium", "uranus"), is(false));
+        assertThat(matcher.sequencesMatching("matshalaga", "matha"), is(false));
+    }
+
+    @Test
+    public void shouldNotMatchForDifferentWordPhrases() {
+        // just like in case of the test above, it's hard to define what "different phrases"
+        // means in terms of fuzzy matching; this test should be also considered just as a way
+        // to adjust sensitivity factors of metrics
+        assertThat(matcher.sequencesMatching("matha fey", "matshalaga obert"), is(false));
+        assertThat(matcher.sequencesMatching("tahir nasuf", "taghtiran pjs"), is(false));
+        assertThat(matcher.sequencesMatching("sal munz", "mupenzi bernard"), is(false));
+    }
+
+    @Test
+    public void shouldNotConsiderNonAlphanumericCharacters() {
+        assertThat(matcher.sequencesMatching("t,e,r,r,o,r,i,s,t", "terrorist"), is(true));
     }
 }
