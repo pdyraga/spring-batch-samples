@@ -13,6 +13,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.core.task.TaskExecutor;
+import org.springframework.integration.Message;
+import org.springframework.integration.MessageChannel;
+import org.springframework.integration.channel.AbstractPollableChannel;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -31,11 +36,33 @@ public class Elixir0LoadStepTest {
 
     @Configuration
     @ComponentScan("com.ontheserverside.batch.bank")
-    @ImportResource({ "classpath:/META-INF/spring/hibernateContext.xml", "classpath:/META-INF/spring/batchContext.xml" })
+    @ImportResource({ "classpath:/META-INF/spring/hibernateContext.xml",
+                      "classpath:/META-INF/spring/batchContext.xml" })
     static class ApplicationContext {
         @Bean
         public JobLauncherTestUtils jobLauncherTestUtils() {
           return new JobLauncherTestUtils();
+        }
+
+        @Bean
+        public TaskExecutor executor() {
+            return new ThreadPoolTaskExecutor();
+        }
+
+        @Bean(name = { "screening.requests.partitioning",
+                       "screening.replies.partitioning"})
+        public MessageChannel channels() {
+            return new AbstractPollableChannel() {
+                @Override
+                protected Message<?> doReceive(long timeout) {
+                    throw new UnsupportedOperationException("I'm just mocked test channel");
+                }
+
+                @Override
+                protected boolean doSend(Message<?> message, long timeout) {
+                    throw new UnsupportedOperationException("I'm just mocked test channel");
+                }
+            };
         }
     }
 

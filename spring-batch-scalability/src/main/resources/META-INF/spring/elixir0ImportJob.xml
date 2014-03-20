@@ -20,6 +20,7 @@
       <next on="CHUNKING" to="paymentSanctionScreeningStep.chunking" />
       <next on="PARTITIONING" to="paymentSanctionScreeningStep.partitioning" />
       <next on="REMOTE_CHUNKING" to="paymentSanctionScreeningStep.remoteChunking" />
+      <next on="REMOTE_PARTITIONING" to="paymentSanctionScreeningStep.remotePartitioning.MASTER" />
     </decision>
       
     <step id="paymentSanctionScreeningStep.chunking">
@@ -53,7 +54,27 @@
       <end on="COMPLETED" />
       <fail on="FAILED" />
     </step>
+
+    <step id="paymentSanctionScreeningStep.remotePartitioning.MASTER">
+      <partition partitioner="moduloPartitioner" handler="JMSPartitionHandler">
+        <step>
+          <tasklet>
+            <chunk reader="paymentSanctionScreeningReader.partitioning" processor="paymentSanctionScreeningProcessor"
+                   writer="hibernateItemWriter" commit-interval="5" />
+          </tasklet>
+        </step>
+      </partition>
+      <end on="COMPLETED" />
+      <fail on="FAILED" />
+    </step>
   </job>
+
+  <step id="paymentSanctionScreeningStep.remotePartitioning.PARTITION" xmlns="http://www.springframework.org/schema/batch">
+    <tasklet>
+      <chunk reader="paymentSanctionScreeningReader.partitioning" processor="paymentSanctionScreeningProcessor"
+             writer="hibernateItemWriter" commit-interval="5" />
+    </tasklet>
+  </step>
 
   <bean id="elixir0LoadReader" class="org.springframework.batch.item.file.FlatFileItemReader" scope="step">
     <property name="resource" value="file:#{jobParameters['inputFile']}" />
@@ -158,5 +179,22 @@
     <property name="maxWaitTimeouts" value="10" />
   </bean>
 
+  <bean id="JMSPartitionHandler" class="org.springframework.batch.integration.partition.MessageChannelPartitionHandler">
+    <property name="stepName" value="paymentSanctionScreeningStep.remotePartitioning.PARTITION" />
+    <property name="gridSize" value="8" />
+    <property name="messagingOperations">
+      <bean class="org.springframework.integration.core.MessagingTemplate">
+        <property name="defaultChannel" ref="screening.requests.partitioning"/>
+      </bean>
+    </property>
+    <property name="replyChannel" ref="screening.replies.partitioning" />
+  </bean>
+
+  <bean name="stepExecutionRequestHandler" class="org.springframework.batch.integration.partition.StepExecutionRequestHandler">
+    <property name="jobExplorer" ref="jobExplorer" />
+    <property name="stepLocator">
+      <bean class="org.springframework.batch.integration.partition.BeanFactoryStepLocator" />
+    </property>
+  </bean>
 
 </beans>

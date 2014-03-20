@@ -23,14 +23,21 @@
         <property name="sessionFactory" ref="sessionFactory"/>
     </bean>
 
+    <jdbc:initialize-database data-source="dataSource">
+        <jdbc:script location="classpath:/META-INF/database/init.sql"/>
+        <jdbc:script location="classpath:/org/springframework/batch/core/schema-h2.sql"/>
+    </jdbc:initialize-database>
+
+    <bean id="hibernateProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="properties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.H2Dialect</prop>
+            </props>
+        </property>
+    </bean>
+
     <beans profile="prod">
-
         <jee:jndi-lookup id="dataSource" jndi-name="java:comp/env/jdbc/DS"/>
-
-        <jdbc:initialize-database data-source="dataSource">
-            <jdbc:script location="classpath:/META-INF/database/init.sql"/>
-            <jdbc:script location="classpath:/org/springframework/batch/core/schema-h2.sql"/>
-        </jdbc:initialize-database>
 
         <bean id="org.h2.tools.Server" class="org.h2.tools.Server"
               factory-method="createTcpServer" init-method="start" destroy-method="stop">
@@ -41,31 +48,11 @@
               factory-method="createWebServer" init-method="start">
             <constructor-arg value="-web,-webAllowOthers,-webPort,8082" />
         </bean>
-
-        <bean id="hibernateProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
-            <property name="properties">
-                <props>
-                    <prop key="hibernate.dialect">org.hibernate.dialect.H2Dialect</prop>
-                </props>
-            </property>
-        </bean>
-
     </beans>
 
 
     <beans profile="test">
-
         <jdbc:embedded-database id="dataSource" type="H2"/>
-
-        <bean id="hibernateProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
-            <property name="properties">
-                <props>
-                    <prop key="hibernate.dialect">org.hibernate.dialect.H2Dialect</prop>
-                    <prop key="hibernate.hbm2ddl.auto">create</prop>
-                </props>
-            </property>
-        </bean>
-
     </beans>
 
 </beans>

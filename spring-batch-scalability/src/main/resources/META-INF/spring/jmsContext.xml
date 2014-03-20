@@ -50,7 +50,42 @@
     </int:transformer>
 
     <int:channel id="screening.replies.chunking">
-        <int:queue/>
+      <int:queue/>
+    </int:channel>
+
+
+    <!-- master -->
+    <int:channel id="screening.requests.partitioning" />
+    <int-jms:outbound-channel-adapter connection-factory="JMSConnectionFactory" channel="screening.requests.partitioning"
+                                      destination-name="queue-screening-requests-partitioning" />
+
+
+    <!-- slave -->
+    <int-jms:message-driven-channel-adapter connection-factory="JMSConnectionFactory"
+                                            destination-name="queue-screening-requests-partitioning"
+                                            channel="screening.handler.in.partitioning"
+                                            concurrent-consumers="8"/>
+    <int:channel id="screening.handler.in.partitioning" />
+    <int:service-activator input-channel="screening.handler.in.partitioning" output-channel="screening.handler.out.partitioning"
+            ref="stepExecutionRequestHandler" method="handle" />
+
+    <int:channel id="screening.handler.out.partitioning" />
+    <int-jms:outbound-channel-adapter connection-factory="JMSConnectionFactory"
+                                      destination-name="queue-screening-replies-partitioning"
+                                      channel="screening.handler.out.partitioning" />
+
+
+    <!-- master -->
+    <int-jms:message-driven-channel-adapter connection-factory="JMSConnectionFactory" channel="screening.staging.partitioning"
+                                            destination-name="queue-screening-replies-partitioning" />
+
+    <int:channel id="screening.staging.partitioning" />
+
+    <int:aggregator ref="JMSPartitionHandler" method="aggregate"
+                    input-channel="screening.staging.partitioning" output-channel="screening.replies.partitioning" send-timeout="10000000000"/>
+
+    <int:channel id="screening.replies.partitioning">
+      <int:queue />
     </int:channel>
 
 </beans>
