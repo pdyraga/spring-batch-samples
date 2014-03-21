@@ -108,8 +108,14 @@
           <value>
             SELECT NEW com.ontheserverside.batch.bank.screening.SanctionScreeningContext (tx, entity)
             FROM Elixir0Transaction tx, SDNEntity entity
+            WHERE tx.status = :txStatus
             ORDER BY tx.id
           </value>
+        </property>
+        <property name="parameterValues">
+          <map>
+            <entry key="txStatus" value="#{T(com.ontheserverside.batch.bank.tx.TransactionStatus).LOADED}"/>
+          </map>
         </property>
       </bean>
     </constructor-arg>
@@ -123,8 +129,14 @@
       <value>
         SELECT NEW com.ontheserverside.batch.bank.screening.SanctionScreeningContext (tx, entity)
         FROM Elixir0Transaction tx, SDNEntity entity
+        WHERE tx.status = :txStatus
         ORDER BY tx.id
       </value>
+    </property>
+    <property name="parameterValues">
+      <map>
+        <entry key="txStatus" value="#{T(com.ontheserverside.batch.bank.tx.TransactionStatus).LOADED}"/>
+      </map>
     </property>
   </bean>
 
@@ -136,7 +148,8 @@
       <value>
         SELECT NEW com.ontheserverside.batch.bank.screening.SanctionScreeningContext (tx, entity)
         FROM Elixir0Transaction tx, SDNEntity entity
-        WHERE mod(tx.id, :modDivisor) = :modRemainder
+        WHERE tx.status = :txStatus
+        AND mod(tx.id, :modDivisor) = :modRemainder
         ORDER BY tx.id
       </value>
     </property>
@@ -144,6 +157,7 @@
       <map>
         <entry key="modDivisor" value="#{stepExecutionContext['mod.divisor']}" />
         <entry key="modRemainder" value="#{stepExecutionContext['mod.remainder']}" />
+        <entry key="txStatus" value="#{T(com.ontheserverside.batch.bank.tx.TransactionStatus).LOADED}"/>
       </map>
     </property>
   </bean>
