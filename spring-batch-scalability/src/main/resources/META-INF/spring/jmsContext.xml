@@ -82,7 +82,7 @@
     <int:channel id="screening.staging.partitioning" />
 
     <int:aggregator ref="JMSPartitionHandler" method="aggregate"
-                    input-channel="screening.staging.partitioning" output-channel="screening.replies.partitioning" send-timeout="10000000000"/>
+                    input-channel="screening.staging.partitioning" output-channel="screening.replies.partitioning" send-timeout="3600000"/> <!-- 1h in [ms] -->
 
     <int:channel id="screening.replies.partitioning">
       <int:queue />
