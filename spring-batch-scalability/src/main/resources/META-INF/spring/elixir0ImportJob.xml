@@ -28,7 +28,7 @@
         <chunk reader="paymentSanctionScreeningReader.chunking" processor="paymentSanctionScreeningProcessor"
                writer="hibernateItemWriter" commit-interval="5"/>
       </tasklet>
-      <end on="COMPLETED" />
+      <next on="COMPLETED" to="updateScreenedTransactionStatusStep" />
       <fail on="FAILED" />
     </step>
 
@@ -42,7 +42,7 @@
         </step>
         <handler task-executor="executor" grid-size="8" />
       </partition>
-      <end on="COMPLETED"/>
+      <next on="COMPLETED" to="updateScreenedTransactionStatusStep" />
       <fail on="FAILED" />
     </step>
 
@@ -51,7 +51,7 @@
         <chunk reader="paymentSanctionScreeningReader.remoteChunking" processor="paymentSanctionScreeningProcessor"
                writer="hibernateItemWriter" commit-interval="5" />
       </tasklet>
-      <end on="COMPLETED" />
+      <next on="COMPLETED" to="updateScreenedTransactionStatusStep" />
       <fail on="FAILED" />
     </step>
 
@@ -64,6 +64,12 @@
           </tasklet>
         </step>
       </partition>
+      <next on="COMPLETED" to="updateScreenedTransactionStatusStep" />
+      <fail on="FAILED" />
+    </step>
+
+    <step id="updateScreenedTransactionStatusStep">
+      <tasklet ref="updateScreenedTransactionStatusTasklet" />
       <end on="COMPLETED" />
       <fail on="FAILED" />
     </step>
@@ -190,11 +196,13 @@
     <property name="replyChannel" ref="screening.replies.partitioning" />
   </bean>
 
-  <bean name="stepExecutionRequestHandler" class="org.springframework.batch.integration.partition.StepExecutionRequestHandler">
+  <bean id="stepExecutionRequestHandler" class="org.springframework.batch.integration.partition.StepExecutionRequestHandler">
     <property name="jobExplorer" ref="jobExplorer" />
     <property name="stepLocator">
       <bean class="org.springframework.batch.integration.partition.BeanFactoryStepLocator" />
     </property>
   </bean>
+
+  <bean id="updateScreenedTransactionStatusTasklet" class="com.ontheserverside.batch.bank.screening.UpdateScreenedTransactionStatusTasklet" />
 
 </beans>
