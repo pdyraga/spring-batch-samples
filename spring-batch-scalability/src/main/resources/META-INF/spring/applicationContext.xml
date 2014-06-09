@@ -21,6 +21,6 @@
         <context:exclude-filter expression="com.ontheserverside.batch.bank.controller.*" type="regex"/>
     </context:component-scan>
 
-    <task:executor id="executor" pool-size="10" />
+    <task:executor id="executor" pool-size="50" />
 
 </beans>
