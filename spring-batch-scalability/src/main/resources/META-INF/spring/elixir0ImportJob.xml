@@ -4,7 +4,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch-2.2.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-  <job id="elixir0ImportJob" xmlns="http://www.springframework.org/schema/batch">
+  <job id="elixir0ImportJob" restartable="true" xmlns="http://www.springframework.org/schema/batch">
 
     <validator ref="elixir0ImportJobParametersValidator" />
 
@@ -30,6 +30,9 @@
       </tasklet>
       <next on="COMPLETED" to="updateScreenedTransactionStatusStep" />
       <fail on="FAILED" />
+      <listeners>
+        <listener ref="paymentSanctionScreeningRecoveryCleaner" />
+      </listeners>
     </step>
 
     <step id="paymentSanctionScreeningStep.partitioning">
@@ -44,6 +47,9 @@
       </partition>
       <next on="COMPLETED" to="updateScreenedTransactionStatusStep" />
       <fail on="FAILED" />
+      <listeners>
+        <listener ref="paymentSanctionScreeningRecoveryCleaner" />
+      </listeners>
     </step>
 
     <step id="paymentSanctionScreeningStep.remoteChunking">
@@ -53,6 +59,9 @@
       </tasklet>
       <next on="COMPLETED" to="updateScreenedTransactionStatusStep" />
       <fail on="FAILED" />
+      <listeners>
+        <listener ref="paymentSanctionScreeningRecoveryCleaner" />
+      </listeners>
     </step>
 
     <step id="paymentSanctionScreeningStep.remotePartitioning.MASTER">
@@ -66,6 +75,9 @@
       </partition>
       <next on="COMPLETED" to="updateScreenedTransactionStatusStep" />
       <fail on="FAILED" />
+      <listeners>
+        <listener ref="paymentSanctionScreeningRecoveryCleaner" />
+      </listeners>
     </step>
 
     <step id="updateScreenedTransactionStatusStep">
@@ -161,6 +173,8 @@
       </map>
     </property>
   </bean>
+
+  <bean id="paymentSanctionScreeningRecoveryCleaner" class="com.ontheserverside.batch.bank.screening.SanctionScreeningRecoveryCleaner" />
 
   <bean id="paymentSanctionScreeningProcessor" class="com.ontheserverside.batch.bank.screening.SanctionScreeningProcessor" />
 
