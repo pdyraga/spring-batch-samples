@@ -88,6 +88,7 @@ public class JaroBagFuzzyMatcherTest {
         assertThat(matcher.sequencesMatching("matha fey", "matshalaga obert"), is(false));
         assertThat(matcher.sequencesMatching("tahir nasuf", "taghtiran pjs"), is(false));
         assertThat(matcher.sequencesMatching("sal munz", "mupenzi bernard"), is(false));
+        assertThat(matcher.sequencesMatching("lochinvar farm", "farmacia la colina"), is(false));
     }
 
     @Test

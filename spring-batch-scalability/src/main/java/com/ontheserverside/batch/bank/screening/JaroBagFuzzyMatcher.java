@@ -18,7 +18,7 @@ public final class JaroBagFuzzyMatcher implements FuzzyMatcher {
 
     private static final double JARO_SINGLE_WORD_PHRASE_MIN_MATCH_FACTOR = 0.9;
     private static final double JARO_WORD_MIN_MATCH_FACTOR = 0.8333;
-    private static final double BAG_MIN_MATCH_FACTOR = 0.9;
+    private static final double BAG_MIN_MATCH_FACTOR = 0.932;
 
     private final InterfaceStringMetric jaroMetric = new Jaro();
 
