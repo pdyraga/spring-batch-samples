@@ -19,13 +19,13 @@ public final class ModuloPartitioner implements Partitioner {
             ExecutionContext context = new ExecutionContext();
             context.putInt(MOD_DIVISOR_KEY, gridSize);
             context.putInt(MOD_REMAINDER_KEY, i);
-            contextMap.put(getContextName(i), context);
+            contextMap.put(getPartitionName(i), context);
         }
 
         return contextMap;
     }
 
-    private String getContextName(int index) {
+    private String getPartitionName(int index) {
         return String.format("partition-%d", index);
     }
 }
