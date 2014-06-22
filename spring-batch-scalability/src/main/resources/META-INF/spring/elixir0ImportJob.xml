@@ -47,9 +47,6 @@
       </partition>
       <next on="COMPLETED" to="updateScreenedTransactionStatusStep" />
       <fail on="FAILED" />
-      <listeners>
-        <listener ref="paymentSanctionScreeningRecoveryCleaner" />
-      </listeners>
     </step>
 
     <step id="paymentSanctionScreeningStep.remoteChunking">
@@ -67,7 +64,7 @@
     <step id="paymentSanctionScreeningStep.remotePartitioning.MASTER">
       <partition partitioner="moduloPartitioner" handler="JMSPartitionHandler">
         <step>
-          <tasklet>
+          <tasklet throttle-limit="1">
             <chunk reader="paymentSanctionScreeningReader.partitioning" processor="paymentSanctionScreeningProcessor"
                    writer="hibernateItemWriter" commit-interval="5" />
           </tasklet>
@@ -75,9 +72,6 @@
       </partition>
       <next on="COMPLETED" to="updateScreenedTransactionStatusStep" />
       <fail on="FAILED" />
-      <listeners>
-        <listener ref="paymentSanctionScreeningRecoveryCleaner" />
-      </listeners>
     </step>
 
     <step id="updateScreenedTransactionStatusStep">
@@ -88,7 +82,7 @@
   </job>
 
   <step id="paymentSanctionScreeningStep.remotePartitioning.PARTITION" xmlns="http://www.springframework.org/schema/batch">
-    <tasklet>
+    <tasklet throttle-limit="1">
       <chunk reader="paymentSanctionScreeningReader.partitioning" processor="paymentSanctionScreeningProcessor"
              writer="hibernateItemWriter" commit-interval="5" />
     </tasklet>
