@@ -22,7 +22,7 @@
           </jee:environment>
         </jee:jndi-lookup>
       </constructor-arg>
-      <property name="sessionCacheSize" value="4" />
+      <property name="sessionCacheSize" value="10" />
     </bean>
 
 
@@ -34,7 +34,7 @@
 
     <!-- slave -->
     <jms:listener-container connection-factory="JMSConnectionFactory" transaction-manager="transactionManager"
-                            acknowledge="transacted" concurrency="4">
+                            acknowledge="transacted" concurrency="8">
       <jms:listener destination="queue-screening-requests-chunking" response-destination="queue-screening-replies-chunking"
                     ref="chunkHandler" method="handleChunk" />
     </jms:listener-container>
