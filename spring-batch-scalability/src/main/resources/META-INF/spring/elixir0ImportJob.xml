@@ -62,14 +62,7 @@
     </step>
 
     <step id="paymentSanctionScreeningStep.remotePartitioning.MASTER">
-      <partition partitioner="moduloPartitioner" handler="JMSPartitionHandler">
-        <step>
-          <tasklet throttle-limit="1">
-            <chunk reader="paymentSanctionScreeningReader.partitioning" processor="paymentSanctionScreeningProcessor"
-                   writer="hibernateItemWriter" commit-interval="5" />
-          </tasklet>
-        </step>
-      </partition>
+      <partition partitioner="moduloPartitioner" handler="JMSPartitionHandler" step="paymentSanctionScreeningStep.remotePartitioning.PARTITION" />
       <next on="COMPLETED" to="updateScreenedTransactionStatusStep" />
       <fail on="FAILED" />
     </step>
