@@ -1,7 +1,8 @@
 Spring Batch scaling strategies - sample application
 ===
+http://www.ontheserverside.com/blog/2014/07/23/horizontal-and-vertical-scaling-strategies-for-batch-applications/
 
-This is sample application developed for "Horizontal and Vertical Scaling Strategies for Batch Applications" article. 
+This is sample application developed for ["Horizontal and Vertical Scaling Strategies for Batch Applications"](http://www.ontheserverside.com/blog/2014/07/23/horizontal-and-vertical-scaling-strategies-for-batch-applications/) article. 
 
 Application is responsible for processing Elixir0 messages. Elixir0 is a country-domestic Polish bank message format that represents standard credit transfer transactions. All payments contained by Elixir0 are screened against OFAC's Specially Designated Nationals List. Screening algorithm performs fuzzy matching of beneficiary and ordering party name, address and alternate name against every SDN entity. If algorithm detects that sanctions might be imposed on ordering or receiving party, placement of the particular transaction is suspended and waits for manual approval. 
 
@@ -26,6 +27,6 @@ Go to [http://localhost:8080](http://localhost:8080) and generate sample Elixir0
 
 You can access database web interface by going to [http://localhost:8082](http://localhost:8082). The username is `sa` and password is `sa`. The most important job outcome is list of transactions that have been suspended together with sanctions matched for particular transaction. You can observe this list by querying the `SANCTION_PREVIEW` view: `SELECT * FROM SANCTION_PREVIEW `. Each row in this view represents suspended transaction. View displays all data from Elixir0 transactions that were analysed by fuzzy string matching algorithm, that is, beneficiary name, beneficiary address, ordering party name and ordering party address. Columns starting with `SDN_` prefix are data from entity on the OFAC's SDN list that could be potentially involved in the particular transaction. For instance, the first row represents transaction that has been suspended because the beneficiary name (`MOLDTRANSAVIA SRL`) is matching SDN entity with the same name.
 
-Please visit the article for more information: [update with link to the article]
+Please visit the article for more information: http://www.ontheserverside.com/blog/2014/07/23/horizontal-and-vertical-scaling-strategies-for-batch-applications/
 
 ![image](https://cloud.githubusercontent.com/assets/4712360/3423640/d5b10236-ffa1-11e3-9c54-93a11beb55e9.png)
